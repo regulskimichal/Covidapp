@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">CovidApp</string>
+    <string name="title_main_activity">CovidApp</string>
+    <string name="label_map">Map</string>
+    <string name="label_stats">Stats</string>
+    <string name="label_new_cases">New Cases:</string>
+    <string name="label_new_deaths">New Deaths:</string>
+    <string name="label_new_recovered">New Recovered:</string>
+    <string name="label_total_cases">Total Cases:</string>
+    <string name="label_total_deaths">Total Deaths:</string>
+    <string name="label_total_recovered">Total Recovered:</string>
+    <string name="label_search">Search</string>
+    <string name="cd_list">List</string>
+    <string name="cd_map">Map</string>
+</resources>
