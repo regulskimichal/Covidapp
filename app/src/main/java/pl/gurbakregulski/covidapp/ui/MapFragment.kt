@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat.checkSelfPermission
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.MapFragmentBinding
+import pl.gurbakregulski.covidapp.ui.MainActivity.Companion.LOCATION_PERMISSION_REQUEST_CODE
 import pl.gurbakregulski.covidapp.viewmodel.MainActivityViewModel
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -67,7 +67,7 @@ class MapFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (isPermissionsGranted()) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.any { it == PERMISSION_GRANTED }) {
             onPermissionGranted()
         }
     }
@@ -96,12 +96,11 @@ class MapFragment : Fragment() {
 
     private fun requestPermission() {
         requestPermissions(
-            requireActivity(),
             arrayOf(
                 ACCESS_FINE_LOCATION,
                 ACCESS_COARSE_LOCATION
             ),
-            MainActivity.LOCATION_PERMISSION_REQUEST_CODE
+            LOCATION_PERMISSION_REQUEST_CODE
         )
     }
 
