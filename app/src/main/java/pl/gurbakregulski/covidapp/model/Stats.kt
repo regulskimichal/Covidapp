@@ -24,7 +24,15 @@ data class CountryStats(
     @JsonProperty("NewRecovered") override val newRecovered: Long,
     @JsonProperty("TotalRecovered") override val totalRecovered: Long,
     @JsonProperty("Date") val date: Instant
-) : Stats(country, newConfirmed, totalConfirmed, newDeaths, totalDeaths, newRecovered, totalRecovered)
+) : Stats(
+    country,
+    newConfirmed,
+    totalConfirmed,
+    newDeaths,
+    totalDeaths,
+    newRecovered,
+    totalRecovered
+)
 
 data class GlobalStats(
     @JsonProperty("NewConfirmed") override val newConfirmed: Long,
@@ -33,4 +41,12 @@ data class GlobalStats(
     @JsonProperty("TotalDeaths") override val totalDeaths: Long,
     @JsonProperty("NewRecovered") override val newRecovered: Long,
     @JsonProperty("TotalRecovered") override val totalRecovered: Long
-) : Stats("Global", newConfirmed, totalConfirmed, newDeaths, totalDeaths, newRecovered, totalRecovered)
+) : Stats(
+    "Global",
+    newConfirmed,
+    totalConfirmed,
+    newDeaths,
+    totalDeaths,
+    newRecovered,
+    totalRecovered
+)

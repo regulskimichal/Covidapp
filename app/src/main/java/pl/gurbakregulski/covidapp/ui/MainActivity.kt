@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.blongho.country_data.World
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,39 +27,28 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
         }
-        World.init(this)
         viewModel.updateData {
-            Snackbar
-                .make(
-                    binding.fragmentContainerView,
-                    "Data fetching failed. Try again later",
-                    Snackbar.LENGTH_LONG
-                )
-                .setAnchorView(binding.bottomNavigation)
-                .show()
+            showErrorMessage("Data fetching failed. Try again later")
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        // Now that BottomNavigationBar has restored its instance state
-        // and its selectedItemId, we can proceed with setting up the
-        // BottomNavigationBar with Navigation
         setupBottomNavigationBar()
     }
 
+    // Code taken from: github.com/android/architecture-components-samples/tree/master/NavigationAdvancedSample
     private fun setupBottomNavigationBar() {
         val navGraphIds = listOf(R.navigation.map, R.navigation.stats)
 
-        // Setup the bottom navigation view with a list of navigation graphs
-        val controller = findViewById<BottomNavigationView>(R.id.bottomNavigation).setupWithNavController(
-            navGraphIds = navGraphIds,
-            fragmentManager = supportFragmentManager,
-            containerId = R.id.fragmentContainerView,
-            intent = intent
-        )
+        val controller =
+            findViewById<BottomNavigationView>(R.id.bottomNavigation).setupWithNavController(
+                navGraphIds = navGraphIds,
+                fragmentManager = supportFragmentManager,
+                containerId = R.id.fragmentContainerView,
+                intent = intent
+            )
 
-        // Whenever the selected controller changes, setup the action bar.
         controller.observe(this, Observer { navController ->
             setupActionBarWithNavController(navController)
         })
@@ -74,6 +62,21 @@ class MainActivity : AppCompatActivity() {
     private fun bind() = MainActivityBinding.inflate(layoutInflater).apply {
         lifecycleOwner = this@MainActivity
         viewModel = viewModel
+    }
+
+    private fun showErrorMessage(message: String) {
+        Snackbar
+            .make(
+                binding.fragmentContainerView,
+                message,
+                Snackbar.LENGTH_LONG
+            )
+            .setAnchorView(binding.bottomNavigation)
+            .show()
+    }
+
+    companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 101
     }
 
 }

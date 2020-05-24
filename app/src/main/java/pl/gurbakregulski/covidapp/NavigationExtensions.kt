@@ -27,11 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-/**
- * Manages the various graphs needed for a [BottomNavigationView].
- *
- * This sample is a workaround until the Navigation Component supports multiple back stacks.
- */
+// github.com/android/architecture-components-samples/tree/master/NavigationAdvancedSample
 fun BottomNavigationView.setupWithNavController(
     navGraphIds: List<Int>,
     fragmentManager: FragmentManager,

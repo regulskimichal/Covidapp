@@ -1,25 +1,40 @@
 package pl.gurbakregulski.covidapp.ui
 
-import android.location.Geocoder
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.annotation.RequiresPermission
+import androidx.core.app.ActivityCompat.checkSelfPermission
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.maps.CameraUpdateFactory
-import com.google.android.libraries.maps.model.LatLng
-import com.google.android.libraries.maps.model.MarkerOptions
-import org.koin.android.ext.android.inject
+import com.google.android.libraries.maps.GoogleMap
+import com.google.android.libraries.maps.MapView
+import com.google.android.libraries.maps.OnMapReadyCallback
+import com.google.android.libraries.maps.model.MapStyleOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.MapFragmentBinding
 import pl.gurbakregulski.covidapp.viewmodel.MainActivityViewModel
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+@Suppress("EXPERIMENTAL_API_USAGE")
 class MapFragment : Fragment() {
 
     private lateinit var binding: MapFragmentBinding
     private val viewModel: MainActivityViewModel by sharedViewModel()
-    private val geocoder: Geocoder by inject()
+    private lateinit var googleMap: GoogleMap
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,25 +45,88 @@ class MapFragment : Fragment() {
             lifecycleOwner = activity
             viewModel = this@MapFragment.viewModel
         }
-        binding.map.apply {
-            onCreate(savedInstanceState)
-            getMapAsync { googleMap ->
-                googleMap.setOnInfoWindowClickListener {
-                    Toast.makeText(
-                        requireContext(),
-                        "Clicked: ${it.toString()}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    true
+        binding.map.onCreate(savedInstanceState)
+
+        lifecycleScope.launchWhenStarted {
+            googleMap = getGoogleMap(binding.map)
+            setMapStyle(googleMap)
+            setupMyLocation()
+            viewModel.statsMarkers.observe(requireActivity(), Observer {
+                it.forEach { marker ->
+                    googleMap.addMarker(marker)
                 }
-                val result = geocoder.getFromLocationName("Poland", 1)
-                val poland = LatLng(result[0].latitude, result[0].longitude)
-                googleMap.addMarker(MarkerOptions().position(poland).snippet("dsadasdasad").visible(true))
-                googleMap.moveCamera(CameraUpdateFactory.newLatLng(poland))
-            }
+            })
         }
+
         return binding.root
     }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (isPermissionsGranted()) {
+            onPermissionGranted()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setupMyLocation() {
+        if (isPermissionsGranted()) {
+            onPermissionGranted()
+        } else {
+            requestPermission()
+        }
+    }
+
+    private fun isPermissionsGranted(): Boolean {
+        return checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) == PERMISSION_GRANTED ||
+                checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
+    }
+
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
+    private fun onPermissionGranted() {
+        googleMap.isMyLocationEnabled = true
+        viewModel.updateLocation {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 4.5f))
+        }
+    }
+
+    private fun requestPermission() {
+        requestPermissions(
+            requireActivity(),
+            arrayOf(
+                ACCESS_FINE_LOCATION,
+                ACCESS_COARSE_LOCATION
+            ),
+            MainActivity.LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun setMapStyle(googleMap: GoogleMap) {
+        googleMap.setMapStyle(
+            MapStyleOptions.loadRawResourceStyle(
+                requireContext(),
+                R.raw.map_style
+            )
+        )
+    }
+
+    @ExperimentalCoroutinesApi
+    suspend fun awaitCallback(block: (OnMapReadyCallback) -> Unit): GoogleMap =
+        suspendCoroutine { cont ->
+            block(OnMapReadyCallback { googleMap -> cont.resume(googleMap) })
+        }
+
+    @ExperimentalCoroutinesApi
+    private suspend fun getGoogleMap(mapView: MapView): GoogleMap =
+        withContext(Dispatchers.Main) {
+            return@withContext awaitCallback { block ->
+                mapView.getMapAsync(block)
+            }
+        }
 
     override fun onPause() {
         binding.map.onPause()
@@ -74,4 +152,5 @@ class MapFragment : Fragment() {
         binding.map.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
+
 }

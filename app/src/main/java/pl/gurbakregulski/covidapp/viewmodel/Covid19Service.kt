@@ -1,4 +1,7 @@
-package pl.gurbakregulski.covidapp.model
+package pl.gurbakregulski.covidapp.viewmodel
+
+import pl.gurbakregulski.covidapp.model.Covid19Repository
+import pl.gurbakregulski.covidapp.model.SummaryStats
 
 class Covid19Service(
     private val covid19Repository: Covid19Repository

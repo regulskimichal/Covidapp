@@ -25,7 +25,9 @@ class StatsFragment : Fragment() {
 
     private lateinit var binding: StatsFragmentBinding
     private val viewModel: MainActivityViewModel by sharedViewModel()
-    private val statsAdapter = StatsAdapter()
+    private val statsAdapter = StatsAdapter().apply {
+        stateRestorationPolicy = PREVENT_WHEN_EMPTY
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +43,6 @@ class StatsFragment : Fragment() {
                 requireActivity(),
                 Observer { statsAdapter.submitList(it) })
             adapter = statsAdapter
-            adapter?.stateRestorationPolicy = PREVENT_WHEN_EMPTY
             layoutManager = LinearLayoutManager(requireContext())
             itemAnimator = DefaultItemAnimator()
         }
@@ -56,7 +57,7 @@ class StatsFragment : Fragment() {
         searchView.apply {
             imeOptions = EditorInfo.IME_ACTION_DONE
             setOnQueryTextListener(
-                debounce(viewModel.viewModelScope, 1000L, viewModel::filterStats)
+                debounce(viewModel.viewModelScope, 750L, viewModel::setFilterStats)
             )
         }
     }
