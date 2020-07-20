@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.maps.CameraUpdateFactory
@@ -21,7 +22,6 @@ import com.google.android.libraries.maps.model.MapStyleOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.MapFragmentBinding
 import pl.gurbakregulski.covidapp.ui.MainActivity.Companion.LOCATION_PERMISSION_REQUEST_CODE
@@ -33,7 +33,7 @@ import kotlin.coroutines.suspendCoroutine
 class MapFragment : Fragment() {
 
     private lateinit var binding: MapFragmentBinding
-    private val viewModel: MainActivityViewModel by sharedViewModel()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var googleMap: GoogleMap
 
     override fun onCreateView(

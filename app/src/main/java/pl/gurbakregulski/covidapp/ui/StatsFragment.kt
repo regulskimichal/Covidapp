@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.StatsFragmentBinding
 import pl.gurbakregulski.covidapp.debounce
@@ -24,7 +24,7 @@ import pl.gurbakregulski.covidapp.viewmodel.MainActivityViewModel
 class StatsFragment : Fragment() {
 
     private lateinit var binding: StatsFragmentBinding
-    private val viewModel: MainActivityViewModel by sharedViewModel()
+    private val viewModel: MainActivityViewModel by activityViewModels()
     private val statsAdapter = StatsAdapter().apply {
         stateRestorationPolicy = PREVENT_WHEN_EMPTY
     }

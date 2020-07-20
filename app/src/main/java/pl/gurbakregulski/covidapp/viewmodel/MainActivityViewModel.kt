@@ -5,6 +5,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.location.Geocoder
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -23,7 +24,7 @@ import pl.gurbakregulski.covidapp.model.Stats
 import java.io.IOException
 import java.util.*
 
-class MainActivityViewModel(
+class MainActivityViewModel @ViewModelInject constructor(
     private val covid19Service: Covid19Service,
     private val locationService: LocationService,
     private val geocoder: Geocoder

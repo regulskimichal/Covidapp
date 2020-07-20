@@ -1,6 +1,7 @@
 package pl.gurbakregulski.covidapp.ui
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -8,16 +9,17 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.MainActivityBinding
 import pl.gurbakregulski.covidapp.setupWithNavController
 import pl.gurbakregulski.covidapp.viewmodel.MainActivityViewModel
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding: MainActivityBinding by lazy { bind() }
-    private val viewModel: MainActivityViewModel by viewModel()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     private var currentNavController: LiveData<NavController>? = null
 

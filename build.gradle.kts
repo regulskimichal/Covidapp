@@ -3,7 +3,7 @@ plugins {
     kotlin("android") apply false
     kotlin("android.extensions") apply false
     kotlin("kapt") apply false
-    id("androidx.navigation.safeargs") apply false
+    id("dagger.hilt.android.plugin") apply false
     id("androidx.navigation.safeargs.kotlin") apply false
 }
 
