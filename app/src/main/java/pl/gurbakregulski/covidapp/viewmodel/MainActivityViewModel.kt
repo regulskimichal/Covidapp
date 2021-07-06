@@ -5,14 +5,14 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.location.Geocoder
 import android.util.Log
 import androidx.annotation.RequiresPermission
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.libraries.maps.model.LatLng
-import com.google.android.libraries.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
@@ -23,8 +23,10 @@ import kotlinx.coroutines.withContext
 import pl.gurbakregulski.covidapp.model.Stats
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
 
-class MainActivityViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MainActivityViewModel @Inject constructor(
     private val covid19Service: Covid19Service,
     private val locationService: LocationService,
     private val geocoder: Geocoder
@@ -38,7 +40,7 @@ class MainActivityViewModel @ViewModelInject constructor(
             else -> {
                 Transformations.switchMap(stats) { _stats ->
                     val filtered = _stats.filter { stat ->
-                        stat.country.toLowerCase(Locale.getDefault()).contains(query)
+                        stat.country.lowercase(Locale.getDefault()).contains(query)
                     }
                     MutableLiveData(filtered)
                 }
@@ -62,7 +64,7 @@ class MainActivityViewModel @ViewModelInject constructor(
     }
 
     fun setFilterStats(countryName: String?) {
-        countryFilter.value = countryName?.toLowerCase(Locale.getDefault())
+        countryFilter.value = countryName?.lowercase(Locale.getDefault())
     }
 
     @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])

@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application") apply false
     kotlin("android") apply false
-    kotlin("android.extensions") apply false
+    kotlin("plugin.parcelize") apply false
     kotlin("kapt") apply false
     id("dagger.hilt.android.plugin") apply false
     id("androidx.navigation.safeargs.kotlin") apply false
@@ -10,11 +10,11 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven(url = "https://jitpack.io")
     }
 }
 
-tasks.register("clean", Delete::class) {
+tasks.register("clean", Delete::class.java) {
     delete(rootProject.buildDir)
 }

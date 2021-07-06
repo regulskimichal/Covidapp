@@ -11,7 +11,7 @@ import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import pl.gurbakregulski.covidapp.model.Covid19Repository
 import pl.gurbakregulski.covidapp.viewmodel.Covid19Service
 import pl.gurbakregulski.covidapp.viewmodel.LocationService
@@ -21,7 +21,7 @@ import retrofit2.create
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object ApplicationModule {
 
     @Provides

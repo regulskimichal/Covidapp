@@ -3,16 +3,16 @@ package pl.gurbakregulski.covidapp.ui
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import pl.gurbakregulski.covidapp.R
 import pl.gurbakregulski.covidapp.databinding.MainActivityBinding
-import pl.gurbakregulski.covidapp.setupWithNavController
 import pl.gurbakregulski.covidapp.viewmodel.MainActivityViewModel
 
 @AndroidEntryPoint
@@ -20,45 +20,28 @@ class MainActivity : AppCompatActivity() {
 
     private val binding: MainActivityBinding by lazy { bind() }
     private val viewModel: MainActivityViewModel by viewModels()
-
-    private var currentNavController: LiveData<NavController>? = null
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        if (savedInstanceState == null) {
-            setupBottomNavigationBar()
-        }
         viewModel.updateData {
             showErrorMessage("Data fetching failed. Try again later")
         }
-    }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        setupBottomNavigationBar()
-    }
+        val navHostFragment = supportFragmentManager.findFragmentById(
+            R.id.fragmentContainerView
+        ) as NavHostFragment
 
-    // Code taken from: github.com/android/architecture-components-samples/tree/master/NavigationAdvancedSample
-    private fun setupBottomNavigationBar() {
-        val navGraphIds = listOf(R.navigation.map, R.navigation.stats)
-
-        val controller =
-            findViewById<BottomNavigationView>(R.id.bottomNavigation).setupWithNavController(
-                navGraphIds = navGraphIds,
-                fragmentManager = supportFragmentManager,
-                containerId = R.id.fragmentContainerView,
-                intent = intent
-            )
-
-        controller.observe(this, Observer { navController ->
-            setupActionBarWithNavController(navController)
-        })
-        currentNavController = controller
+        navController = navHostFragment.navController
+        val controller = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        controller.setupWithNavController(navController)
+        appBarConfiguration = AppBarConfiguration(setOf(R.navigation.map, R.navigation.stats))
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return currentNavController?.value?.navigateUp() ?: false
+        return navController.navigateUp(appBarConfiguration)
     }
 
     private fun bind() = MainActivityBinding.inflate(layoutInflater).apply {

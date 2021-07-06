@@ -12,13 +12,12 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.maps.CameraUpdateFactory
-import com.google.android.libraries.maps.GoogleMap
-import com.google.android.libraries.maps.MapView
-import com.google.android.libraries.maps.OnMapReadyCallback
-import com.google.android.libraries.maps.model.MapStyleOptions
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.MapStyleOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.withContext
@@ -40,7 +39,7 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = MapFragmentBinding.inflate(layoutInflater, container, false).apply {
             lifecycleOwner = activity
             viewModel = this@MapFragment.viewModel
@@ -51,11 +50,11 @@ class MapFragment : Fragment() {
             googleMap = getGoogleMap(binding.map)
             setMapStyle(googleMap)
             setupMyLocation()
-            viewModel.statsMarkers.observe(requireActivity(), Observer {
+            viewModel.statsMarkers.observe(requireActivity()) {
                 it.forEach { marker ->
                     googleMap.addMarker(marker)
                 }
-            })
+            }
         }
 
         return binding.root
